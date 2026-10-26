@@ -3,8 +3,23 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Relations\BelongsTo;
+use Illuminate\Database\Relations\HasMany;
 
 class Compra extends Model
 {
-    //
+    public function proveedor(): BelongsTo
+{
+    return $this->belongsTo(Proveedor::class, 'proveedor_id');
+}
+
+public function usuario(): BelongsTo
+{
+    return $this->belongsTo(User::class, 'user_id');
+}
+
+public function detalles(): HasMany
+{
+    return $this->hasMany(DetalleCompra::class, 'compra_id');
+}
 }
