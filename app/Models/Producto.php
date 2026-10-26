@@ -3,8 +3,29 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Relations\BelongsTo;
+use Illuminate\Database\Relations\BelongsToMany;
 
 class Producto extends Model
 {
-    //
+    public function categoria(): BelongsTo
+{
+    return $this->belongsTo(Categoria::class, 'categoria_id');
+}
+
+public function ingredientes(): BelongsToMany
+{
+    return $this->belongsToMany(
+        Ingrediente::class,
+        'producto_ingrediente',
+        'producto_id',
+        'ingrediente_id'
+    )->withPivot('cantidad')->withTimestamps();
+}
+
+public function detallesVenta(): HasMany
+{
+    return $this->hasMany(DetalleVenta::class, 'producto_id');
+}
+
 }
