@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Relations\hasMany;
+use Illuminate\Database\Eloquent\Relations\hasMany;
 
 class Proveedor extends Model
 {
