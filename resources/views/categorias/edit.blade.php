@@ -3,60 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <title>Editar categoría - Cafetería</title>
 </head>
-<body>
 
-    <h1>Editar categoría</h1>
+<body class="bg-gray-100 min-h-screen p-8">
 
-    @if($errors->any())
-        <div style="color: red;">
-            <ul>
-                @foreach($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
+    <div class="max-w-3xl mx-auto bg-white p-6 rounded-lg shadow">
 
-    <form action="{{ route('categorias.update', $categoria->id) }}"
-          method="POST">
+        <h1 class="text-2xl font-bold mb-6">
+            Editar categoría
+        </h1>
 
-        @csrf
-        @method('PUT')
+        {{-- Errores de validación --}}
+        @if($errors->any())
+            <div class="bg-red-100 text-red-700 p-4 rounded mb-6">
+                <ul class="list-disc list-inside">
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
 
-        <div>
-            <label for="nombre">Nombre:</label>
-            <input
-                type="text"
-                id="nombre"
-                name="nombre"
-                value="{{ old('nombre', $categoria->nombre) }}"
-                required
-                maxlength="100"
-            >
-        </div>
+        <form action="{{ route('categorias.update', $categoria->id) }}"
+              method="POST"
+              class="space-y-5">
 
-        <br>
+            @csrf
+            @method('PUT')
 
-        <div>
-            <label for="descripcion">Descripción:</label>
-            <textarea
-                id="descripcion"
-                name="descripcion"
-                rows="4"
-            >{{ old('descripcion', $categoria->descripcion) }}</textarea>
-        </div>
+            <div>
+                <label for="nombre"
+                       class="block font-medium text-gray-700 mb-2">
+                    Nombre:
+                </label>
 
-        <br>
+                <input
+                    type="text"
+                    id="nombre"
+                    name="nombre"
+                    value="{{ old('nombre', $categoria->nombre) }}"
+                    required
+                    maxlength="100"
+                    class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+            </div>
 
-        <button type="submit">Guardar cambios</button>
+            <div>
+                <label for="descripcion"
+                       class="block font-medium text-gray-700 mb-2">
+                    Descripción:
+                </label>
 
-        <a href="{{ route('categorias.index') }}">
-            Cancelar
-        </a>
+                <textarea
+                    id="descripcion"
+                    name="descripcion"
+                    rows="4"
+                    class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >{{ old('descripcion', $categoria->descripcion) }}</textarea>
+            </div>
 
-    </form>
+            <div class="flex flex-wrap gap-3 pt-3">
+
+                <button
+                    type="submit"
+                    class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
+                    Guardar cambios
+                </button>
+
+                <a href="{{ route('categorias.index') }}"
+                   class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded">
+                    Cancelar
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
 
 </body>
 </html>
