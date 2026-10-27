@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -7,7 +6,9 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="bg-gray-100 min-h-screen">
+   
     <div class="max-w-6xl mx-auto p-8">
+        @include('partials.menu')
         <div class="bg-white rounded-xl shadow-md p-6">
 
             <h1 class="text-3xl font-bold mb-6">Administración de Usuarios</h1>

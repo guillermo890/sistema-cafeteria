@@ -10,6 +10,8 @@
 
 <body class="bg-gray-100 min-h-screen p-8">
 
+    @include('partials.menu')
+
     <div class="max-w-6xl mx-auto bg-white p-6 rounded-lg shadow">
 
         <h1 class="text-2xl font-bold mb-6">

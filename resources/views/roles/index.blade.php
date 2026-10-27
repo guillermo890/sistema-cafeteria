@@ -11,7 +11,7 @@
 <body class="bg-gray-100 min-h-screen">
 
     <div class="max-w-6xl mx-auto p-8">
-
+@include('partials.menu')
         <div class="bg-white rounded-xl shadow-md p-6">
 
             <h1 class="text-3xl font-bold text-gray-800 mb-2">
