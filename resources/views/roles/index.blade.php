@@ -18,6 +18,7 @@
                 Administración de Roles
             
             </h1>
+            
                @if (session('success'))
                 <div class= "bg-green-100 text-green-700 p-3 rounded-lg mb-4">
                     {{ session('success')}}
@@ -66,10 +67,14 @@
                 </tr>
                 @endforeach
             </tbody>
+            
                 </table>
 
             </div>
-
+             <a href="{{ route('roles.create') }}"
+            class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+             Registrar nuevo rol
+            </a>
         </div>
 
     </div>
