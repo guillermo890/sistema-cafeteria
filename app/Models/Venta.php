@@ -3,8 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Relation\belongsTo;
-use Illuminate\Database\Relation\hasMany;
+use Illuminate\Database\Eloquent\Relation\belongsTo;
+use Illuminate\Database\Eloquent\Relation\hasMany;
 
 class Venta extends Model
 {
