@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -10,7 +9,7 @@
 <body class="bg-gray-100 p-8">
 
     <div class="max-w-6xl mx-auto bg-white p-6 rounded-lg shadow">
-
+@include('partials.menu')
         <h1 class="text-2xl font-bold mb-4">Clientes</h1>
 
         @if(session('success'))
