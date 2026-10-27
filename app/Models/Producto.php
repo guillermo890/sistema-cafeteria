@@ -28,5 +28,12 @@ public function detallesVenta(): HasMany
 {
     return $this->hasMany(DetalleVenta::class, 'producto_id');
 }
-
+protected $fillable = [
+       'categoria_id',
+    'nombre',
+    'descripcion',
+    'precio',
+    'stock',
+    'estado'
+];
 }

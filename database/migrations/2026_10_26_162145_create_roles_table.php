@@ -18,4 +18,8 @@ public function up(): void
         $table->timestamps();
     });
 }
+public function down(): void 
+{
+    Schema::dropIfExists('roles');
+}
 };

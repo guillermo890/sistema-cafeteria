@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -7,6 +6,7 @@
     <title>Categorías - Cafetería</title>
 </head>
 <body>
+    @include('partials.menu')
     <h1>Gestión de categorías</h1>
 
     @if(session('success'))
