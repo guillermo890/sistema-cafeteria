@@ -35,6 +35,9 @@
                 <label class="block mb-2">Nueva contraseña (opcional)</label>
                 <input type="password" name="password"
                     class="w-full border rounded-lg p-3 mb-4">
+                    <label class="block mb-2">Confirmar nueva contraseña</label>
+                    <input type="password" name="password_confirmation"
+                    class="w-full border rounded-lg p-3 mb-4">
 
                 <label class="block mb-2">Rol</label>
                 <select name="rol_id" class="w-full border rounded-lg p-3 mb-6">
