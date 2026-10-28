@@ -27,8 +27,9 @@
         @endif
 
         <form action="{{ route('ingredientes.update', $ingrediente) }}"
-              method="POST"
-              class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            method="POST"
+            novalidate
+            class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
             @csrf
             @method('PUT')
@@ -46,6 +47,12 @@
                     value="{{ old('nombre', $ingrediente->nombre) }}"
                     required
                     class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+
+                    @error('nombre')
+                <p class="text-red-600 text-sm mt-1">
+                    {{ $message }}
+                </p>
+@enderror
             </div>
 
             <div>
@@ -68,6 +75,11 @@
                     @endforeach
 
                 </select>
+                @error('unidad_medida')
+                <p class="text-red-600 text-sm mt-1">
+                    {{ $message }}
+                </p>
+@enderror
             </div>
 
             <div>
@@ -85,6 +97,12 @@
                     value="{{ old('stock', $ingrediente->stock) }}"
                     required
                     class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+
+                    @error('stock')
+                <p class="text-red-600 text-sm mt-1">
+                    {{ $message }}
+                </p>
+@enderror
             </div>
 
             <div>
@@ -102,6 +120,12 @@
                     value="{{ old('stock_minimo', $ingrediente->stock_minimo) }}"
                     required
                     class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+
+                    @error('stock_minimo')
+                <p class="text-red-600 text-sm mt-1">
+                    {{ $message }}
+                </p>
+@enderror
             </div>
 
             <div class="md:col-span-2 flex flex-wrap gap-3 mt-4">
