@@ -3,236 +3,309 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrar compra</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <title>Registrar compra - Cafetería</title>
 </head>
+<body class="bg-gray-100 min-h-screen">
 
-<body class="bg-gray-100 min-h-screen p-4 md:p-8">
+    <div class="max-w-5xl mx-auto p-6">
+        <div class="bg-white rounded-lg shadow-md p-6">
 
-    <div class="max-w-5xl mx-auto bg-white p-6 rounded-lg shadow">
+            <h1 class="text-2xl font-bold mb-6">Registrar compra</h1>
 
-        <h1 class="text-2xl font-bold mb-6">
-            Registrar nueva compra
-        </h1>
-
-        {{-- Errores de validación --}}
-        @if($errors->any())
-            <div class="bg-red-100 text-red-700 p-4 rounded mb-6">
-                <ul class="list-disc list-inside">
-                    @foreach($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
-
-        <form action="{{ route('compras.store') }}"
-              method="POST"
-              class="space-y-6">
-
-            @csrf
-
-            {{-- Datos generales --}}
-            <h2 class="text-xl font-semibold border-b pb-2">
-                Datos generales
-            </h2>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-
-                <div>
-                    <label for="proveedor_id"
-                           class="block font-medium text-gray-700 mb-2">
-                        Proveedor:
-                    </label>
-
-                    <select
-                        id="proveedor_id"
-                        name="proveedor_id"
-                        required
-                        class="w-full border border-gray-300 rounded px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
-
-                        <option value="">Seleccione un proveedor</option>
-
-                        @foreach($proveedores as $proveedor)
-                            <option value="{{ $proveedor->id }}"
-                                @selected(old('proveedor_id') == $proveedor->id)>
-                                {{ $proveedor->nombre }}
-                            </option>
+            @if ($errors->any())
+                <div class="bg-red-100 text-red-700 p-4 rounded mb-4">
+                    <ul class="list-disc pl-5">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
                         @endforeach
-                    </select>
+                    </ul>
+                </div>
+            @endif
+
+            <form action="{{ route('compras.store') }}" method="POST" id="formCompra">
+                @csrf
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+
+                    <div>
+                        <label class="block font-semibold mb-1">Proveedor</label>
+                        <select name="proveedor_id" class="w-full border rounded p-2" required>
+                            <option value="">Selecciona un proveedor</option>
+                            @foreach ($proveedores as $proveedor)
+                                <option value="{{ $proveedor->id }}"
+                                    {{ old('proveedor_id') == $proveedor->id ? 'selected' : '' }}>
+                                    {{ $proveedor->nombre }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block font-semibold mb-1">Usuario</label>
+                        <select name="user_id" class="w-full border rounded p-2" required>
+                            <option value="">Selecciona un usuario</option>
+                            @foreach ($usuarios as $usuario)
+                                <option value="{{ $usuario->id }}"
+                                    {{ old('user_id') == $usuario->id ? 'selected' : '' }}>
+                                    {{ $usuario->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block font-semibold mb-1">Fecha de compra</label>
+                        <input type="date" name="fecha_compra"
+                            value="{{ old('fecha_compra', date('Y-m-d')) }}"
+                            class="w-full border rounded p-2" required>
+                    </div>
+
                 </div>
 
-                <div>
-                    <label for="user_id"
-                           class="block font-medium text-gray-700 mb-2">
-                        Usuario responsable:
-                    </label>
+                <h2 class="text-xl font-semibold mb-3">Ingredientes de la compra</h2>
 
-                    <select
-                        id="user_id"
-                        name="user_id"
-                        required
-                        class="w-full border border-gray-300 rounded px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <div id="contenedorDetalles" class="space-y-4">
 
-                        <option value="">Seleccione un usuario</option>
+                    @php
+                        $detallesIniciales = old('detalles', []);
+                        if (count($detallesIniciales) === 0) {
+                            $detallesIniciales = [
+                                ['ingrediente_id' => '', 'cantidad' => '']
+                            ];
+                        }
+                    @endphp
 
-                        @foreach($usuarios as $usuario)
-                            <option value="{{ $usuario->id }}"
-                                @selected(old('user_id') == $usuario->id)>
-                                {{ $usuario->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div>
-                    <label for="fecha_compra"
-                           class="block font-medium text-gray-700 mb-2">
-                        Fecha de compra:
-                    </label>
-
-                    <input
-                        type="date"
-                        id="fecha_compra"
-                        name="fecha_compra"
-                        value="{{ old('fecha_compra', date('Y-m-d')) }}"
-                        required
-                        class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                </div>
-
-            </div>
-
-            {{-- Ingredientes --}}
-            <div>
-                <h2 class="text-xl font-semibold border-b pb-2 mb-3">
-                    Ingredientes de la compra
-                </h2>
-
-                <p class="text-gray-600 text-sm mb-4">
-                    Selecciona hasta tres ingredientes diferentes.
-                    El primer ingrediente es obligatorio.
-                </p>
-
-                <div class="space-y-4">
-
-                    @for($i = 0; $i < 3; $i++)
-
-                        <fieldset class="border border-gray-300 rounded-lg p-4">
-
-                            <legend class="px-2 font-semibold text-gray-700">
-                                Ingrediente {{ $i + 1 }}
-                                @if($i === 0)
-                                    <span class="text-red-600">*</span>
-                                @else
-                                    <span class="text-gray-500 text-sm font-normal">
-                                        (Opcional)
-                                    </span>
-                                @endif
-                            </legend>
-
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    @foreach ($detallesIniciales as $i => $detalle)
+                        <div class="detalle border rounded-lg p-4 bg-gray-50">
+                            <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
 
                                 <div>
-                                    <label for="ingrediente_{{ $i }}"
-                                           class="block font-medium text-gray-700 mb-2">
-                                        Ingrediente:
-                                    </label>
-
-                                    <select
-                                        id="ingrediente_{{ $i }}"
-                                        name="detalles[{{ $i }}][ingrediente_id]"
-                                        @if($i === 0) required @endif
-                                        class="w-full border border-gray-300 rounded px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
-
-                                        <option value="">Seleccione ingrediente</option>
-
-                                        @foreach($ingredientes as $ingrediente)
+                                    <label class="block font-semibold mb-1">Ingrediente</label>
+                                    <select name="detalles[{{ $i }}][ingrediente_id]"
+                                        class="ingrediente w-full border rounded p-2" required>
+                                        <option value="">Selecciona un ingrediente</option>
+                                        @foreach ($ingredientes as $ingrediente)
                                             <option value="{{ $ingrediente->id }}"
-                                                @selected(old("detalles.$i.ingrediente_id") == $ingrediente->id)>
+                                                data-precio="{{ $ingrediente->precio }}"
+                                                {{ ($detalle['ingrediente_id'] ?? '') == $ingrediente->id ? 'selected' : '' }}>
                                                 {{ $ingrediente->nombre }}
-                                                ({{ $ingrediente->unidad_medida }})
                                             </option>
                                         @endforeach
                                     </select>
                                 </div>
 
                                 <div>
-                                    <label for="cantidad_{{ $i }}"
-                                           class="block font-medium text-gray-700 mb-2">
-                                        Cantidad:
-                                    </label>
-
-                                    <input
-                                        type="number"
-                                        id="cantidad_{{ $i }}"
+                                    <label class="block font-semibold mb-1">Cantidad</label>
+                                    <input type="number"
                                         name="detalles[{{ $i }}][cantidad]"
-                                        min="0.01"
-                                        step="0.01"
-                                        value="{{ old("detalles.$i.cantidad") }}"
-                                        @if($i === 0) required @endif
-                                        class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                        class="cantidad w-full border rounded p-2"
+                                        min="0.01" step="0.01"
+                                        value="{{ $detalle['cantidad'] ?? '' }}"
+                                        required>
                                 </div>
 
                                 <div>
-                                    <label for="precio_{{ $i }}"
-                                           class="block font-medium text-gray-700 mb-2">
-                                        Precio unitario:
-                                    </label>
+                                    <label class="block font-semibold mb-1">Precio unitario</label>
+                                    <input type="text" class="precio w-full border rounded p-2 bg-gray-200"
+                                        value="0.00" readonly>
+                                </div>
 
-                                    <input
-                                        type="number"
-                                        id="precio_{{ $i }}"
-                                        name="detalles[{{ $i }}][precio_unitario]"
-                                        min="0"
-                                        step="0.01"
-                                        value="{{ old("detalles.$i.precio_unitario") }}"
-                                        @if($i === 0) required @endif
-                                        class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <div>
+                                    <label class="block font-semibold mb-1">Subtotal</label>
+                                    <input type="text" class="subtotal w-full border rounded p-2 bg-gray-200"
+                                        value="0.00" readonly>
                                 </div>
 
                             </div>
 
-                        </fieldset>
-
-                    @endfor
+                            <button type="button"
+                                class="eliminar mt-3 bg-red-600 text-white px-3 py-1 rounded">
+                                Eliminar ingrediente
+                            </button>
+                        </div>
+                    @endforeach
 
                 </div>
-            </div>
 
-            {{-- Observaciones --}}
-            <div>
-                <label for="observaciones"
-                       class="block font-medium text-gray-700 mb-2">
-                    Observaciones:
-                </label>
-
-                <textarea
-                    id="observaciones"
-                    name="observaciones"
-                    rows="3"
-                    placeholder="Escribe alguna observación sobre la compra (opcional)"
-                    class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">{{ old('observaciones') }}</textarea>
-            </div>
-
-            {{-- Botones --}}
-            <div class="flex flex-wrap gap-3 pt-4 border-t">
-
-                <button
-                    type="submit"
-                    class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
-                    Guardar compra
+                <button type="button" id="agregar"
+                    class="mt-4 bg-blue-600 text-white px-4 py-2 rounded">
+                    + Agregar ingrediente
                 </button>
 
-                <a href="{{ route('compras.index') }}"
-                   class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded">
-                    Cancelar
-                </a>
+                <div class="mt-6 text-right">
+                    <label class="text-xl font-bold">Total de la compra: $</label>
+                    <span id="totalCompra" class="text-xl font-bold">0.00</span>
+                </div>
 
-            </div>
+                <div class="mt-6">
+                    <label class="block font-semibold mb-1">Observaciones</label>
+                    <textarea name="observaciones" rows="3"
+                        class="w-full border rounded p-2">{{ old('observaciones') }}</textarea>
+                </div>
 
-        </form>
+                <div class="flex gap-3 mt-6">
+                    <button type="submit"
+                        class="bg-green-600 text-white px-5 py-2 rounded">
+                        Guardar compra
+                    </button>
 
+                    <a href="{{ route('compras.index') }}"
+                        class="bg-gray-500 text-white px-5 py-2 rounded">
+                        Cancelar
+                    </a>
+                </div>
+
+            </form>
+        </div>
     </div>
+
+    <script>
+        const contenedor = document.getElementById('contenedorDetalles');
+        const botonAgregar = document.getElementById('agregar');
+        const totalCompra = document.getElementById('totalCompra');
+
+        const opcionesIngredientes = `
+            <option value="">Selecciona un ingrediente</option>
+            @foreach ($ingredientes as $ingrediente)
+                <option value="{{ $ingrediente->id }}" data-precio="{{ $ingrediente->precio }}">
+                    {{ $ingrediente->nombre }}
+                </option>
+            @endforeach
+        `;
+
+        function actualizarFilas() {
+            const filas = contenedor.querySelectorAll('.detalle');
+
+            filas.forEach((fila, indice) => {
+                fila.querySelector('.ingrediente').name =
+                    `detalles[${indice}][ingrediente_id]`;
+
+                fila.querySelector('.cantidad').name =
+                    `detalles[${indice}][cantidad]`;
+            });
+
+            calcularTotal();
+        }
+
+        function calcularTotal() {
+            let total = 0;
+
+            contenedor.querySelectorAll('.detalle').forEach(fila => {
+                const select = fila.querySelector('.ingrediente');
+                const cantidad = parseFloat(fila.querySelector('.cantidad').value) || 0;
+
+                const opcion = select.options[select.selectedIndex];
+                const precio = parseFloat(opcion?.dataset.precio) || 0;
+
+                const subtotal = cantidad * precio;
+
+                fila.querySelector('.precio').value = precio.toFixed(2);
+                fila.querySelector('.subtotal').value = subtotal.toFixed(2);
+
+                total += subtotal;
+            });
+
+            totalCompra.textContent = total.toFixed(2);
+        }
+
+        function agregarFila() {
+            const fila = document.createElement('div');
+            fila.className = 'detalle border rounded-lg p-4 bg-gray-50';
+
+            fila.innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+
+                    <div>
+                        <label class="block font-semibold mb-1">Ingrediente</label>
+                        <select class="ingrediente w-full border rounded p-2" required>
+                            ${opcionesIngredientes}
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block font-semibold mb-1">Cantidad</label>
+                        <input type="number" class="cantidad w-full border rounded p-2"
+                            min="0.01" step="0.01" required>
+                    </div>
+
+                    <div>
+                        <label class="block font-semibold mb-1">Precio unitario</label>
+                        <input type="text" class="precio w-full border rounded p-2 bg-gray-200"
+                            value="0.00" readonly>
+                    </div>
+
+                    <div>
+                        <label class="block font-semibold mb-1">Subtotal</label>
+                        <input type="text" class="subtotal w-full border rounded p-2 bg-gray-200"
+                            value="0.00" readonly>
+                    </div>
+
+                </div>
+
+                <button type="button"
+                    class="eliminar mt-3 bg-red-600 text-white px-3 py-1 rounded">
+                    Eliminar ingrediente
+                </button>
+            `;
+
+            contenedor.appendChild(fila);
+            actualizarFilas();
+        }
+
+        botonAgregar.addEventListener('click', agregarFila);
+
+        contenedor.addEventListener('input', function(evento) {
+            if (evento.target.classList.contains('cantidad')) {
+                calcularTotal();
+            }
+        });
+
+        contenedor.addEventListener('change', function(evento) {
+            if (evento.target.classList.contains('ingrediente')) {
+                calcularTotal();
+            }
+        });
+
+        contenedor.addEventListener('click', function(evento) {
+            if (evento.target.classList.contains('eliminar')) {
+                const filas = contenedor.querySelectorAll('.detalle');
+
+                if (filas.length > 1) {
+                    evento.target.closest('.detalle').remove();
+                    actualizarFilas();
+                } else {
+                    alert('Debes conservar al menos un ingrediente.');
+                }
+            }
+        });
+
+        document.getElementById('formCompra').addEventListener('submit', function(evento) {
+            const filas = contenedor.querySelectorAll('.detalle');
+            const ingredientesSeleccionados = [];
+
+            for (const fila of filas) {
+                const ingrediente = fila.querySelector('.ingrediente').value;
+                const cantidad = parseFloat(fila.querySelector('.cantidad').value);
+
+                if (!ingrediente || !cantidad || cantidad <= 0) {
+                    evento.preventDefault();
+                    alert('Selecciona un ingrediente y escribe una cantidad válida en cada fila.');
+                    return;
+                }
+
+                if (ingredientesSeleccionados.includes(ingrediente)) {
+                    evento.preventDefault();
+                    alert('No puedes agregar el mismo ingrediente más de una vez.');
+                    return;
+                }
+
+                ingredientesSeleccionados.push(ingrediente);
+            }
+        });
+
+        actualizarFilas();
+    </script>
 
 </body>
 </html>

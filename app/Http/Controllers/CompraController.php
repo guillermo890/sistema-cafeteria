@@ -1,7 +1,5 @@
 <?php
-
 namespace App\Http\Controllers;
-
 use App\Models\Compra;
 use App\Models\DetalleCompra;
 use App\Models\Proveedor;
@@ -10,7 +8,6 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
-
 class CompraController extends Controller
 {
     public function index()
@@ -28,9 +25,7 @@ class CompraController extends Controller
         $ingredientes = Ingrediente::orderBy('nombre')->get();
         $usuarios = User::orderBy('name')->get();
 
-        return view('compras.create', compact(
-            'proveedores', 'ingredientes', 'usuarios'
-        ));
+        return view('compras.create', compact('proveedores', 'ingredientes', 'usuarios'));
     }
 
     private function validarCompra(Request $request): array
@@ -40,6 +35,7 @@ class CompraController extends Controller
             'user_id' => 'required|exists:users,id',
             'fecha_compra' => 'required|date',
             'observaciones' => 'nullable|string|max:1000',
+
             'detalles' => 'required|array|min:1',
             'detalles.*.ingrediente_id' => [
                 'required',
@@ -47,7 +43,6 @@ class CompraController extends Controller
                 'exists:ingredientes,id',
             ],
             'detalles.*.cantidad' => 'required|numeric|gt:0',
-            'detalles.*.precio_unitario' => 'required|numeric|min:0',
         ]);
     }
 
@@ -56,17 +51,31 @@ class CompraController extends Controller
         $total = 0;
 
         foreach ($detalles as $detalle) {
-            $subtotal = round(
-                $detalle['cantidad'] * $detalle['precio_unitario'],
-                2
-            );
+
+            // Obtener el ingrediente y su precio directamente de la base de datos.
+            $ingrediente = Ingrediente::findOrFail($detalle['ingrediente_id']);
+
+            $precio = (float) $ingrediente->precio;
+
+            if ($precio <= 0) {
+                throw ValidationException::withMessages([
+                    'detalles' => "El ingrediente {$ingrediente->nombre} no tiene un precio válido. Actualiza su precio en el catálogo.",
+                ]);
+            }
+
+            $cantidad = (float) $detalle['cantidad'];
+
+            $subtotal = round($cantidad * $precio, 2);
 
             $registro = new DetalleCompra();
             $registro->compra_id = $compra->id;
-            $registro->ingrediente_id = $detalle['ingrediente_id'];
-            $registro->cantidad = $detalle['cantidad'];
-            $registro->precio_unitario = $detalle['precio_unitario'];
+            $registro->ingrediente_id = $ingrediente->id;
+            $registro->cantidad = $cantidad;
+
+            // Se guarda una copia del precio utilizado en esta compra.
+            $registro->precio_unitario = $precio;
             $registro->subtotal = $subtotal;
+
             $registro->save();
 
             $total += $subtotal;
@@ -77,25 +86,27 @@ class CompraController extends Controller
 
     public function store(Request $request)
     {
-
-    $request->merge([
-
-    'detalles' => array_values(array_filter(
-        $request->input('detalles', []),
-        fn ($detalle) => !empty($detalle['ingrediente_id'])
-        )),
-    ]);
+        // Quitar filas vacías antes de validar.
+        $request->merge([
+            'detalles' => array_values(array_filter(
+                $request->input('detalles', []),
+                fn ($detalle) => !empty($detalle['ingrediente_id'])
+            )),
+        ]);
 
         $datos = $this->validarCompra($request);
 
         DB::transaction(function () use ($datos) {
+
             $compra = new Compra();
+
             $compra->proveedor_id = $datos['proveedor_id'];
             $compra->user_id = $datos['user_id'];
             $compra->fecha_compra = $datos['fecha_compra'];
             $compra->observaciones = $datos['observaciones'] ?? null;
             $compra->estado = 'pendiente';
             $compra->total = 0;
+
             $compra->save();
 
             $compra->total = $this->guardarDetalles(
@@ -118,28 +129,33 @@ class CompraController extends Controller
         }
 
         $compra->load('detalles');
+
         $proveedores = Proveedor::orderBy('nombre')->get();
         $ingredientes = Ingrediente::orderBy('nombre')->get();
         $usuarios = User::orderBy('name')->get();
 
         return view('compras.edit', compact(
-            'compra', 'proveedores', 'ingredientes', 'usuarios'
+            'compra',
+            'proveedores',
+            'ingredientes',
+            'usuarios'
         ));
     }
 
     public function update(Request $request, Compra $compra)
-{
-    $request->merge([
-        'detalles' => array_values(array_filter(
-            $request->input('detalles', []),
-            fn ($detalle) => !empty($detalle['ingrediente_id'])
-        )),
-    ]);
+    {
+        // Quitar filas vacías antes de validar.
+        $request->merge([
+            'detalles' => array_values(array_filter(
+                $request->input('detalles', []),
+                fn ($detalle) => !empty($detalle['ingrediente_id'])
+            )),
+        ]);
 
-    $datos = $this->validarCompra($request);
-        
+        $datos = $this->validarCompra($request);
 
         DB::transaction(function () use ($compra, $datos) {
+
             $compra = Compra::whereKey($compra->id)
                 ->lockForUpdate()
                 ->firstOrFail();
@@ -154,6 +170,7 @@ class CompraController extends Controller
             $compra->user_id = $datos['user_id'];
             $compra->fecha_compra = $datos['fecha_compra'];
             $compra->observaciones = $datos['observaciones'] ?? null;
+
             $compra->save();
 
             $compra->detalles()->delete();
@@ -173,6 +190,7 @@ class CompraController extends Controller
     public function recibir(Compra $compra)
     {
         DB::transaction(function () use ($compra) {
+
             $compra = Compra::whereKey($compra->id)
                 ->lockForUpdate()
                 ->firstOrFail();
@@ -186,6 +204,7 @@ class CompraController extends Controller
             $compra->load('detalles');
 
             foreach ($compra->detalles as $detalle) {
+
                 $ingrediente = Ingrediente::findOrFail(
                     $detalle->ingrediente_id
                 );
@@ -205,6 +224,7 @@ class CompraController extends Controller
     public function destroy(Compra $compra)
     {
         DB::transaction(function () use ($compra) {
+
             $compra = Compra::whereKey($compra->id)
                 ->lockForUpdate()
                 ->firstOrFail();

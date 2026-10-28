@@ -66,12 +66,12 @@
                     value="{{ old('nombre') }}"
                     required
                     class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    
-                    @error('nombre')
-            <p class="text-red-600 text-sm mt-1">
-                {{ $message }}
-            </p>
-    @enderror
+
+                @error('nombre')
+                    <p class="text-red-600 text-sm mt-1">
+                        {{ $message }}
+                    </p>
+                @enderror
             </div>
 
             <div>
@@ -95,10 +95,34 @@
                         </option>
                     @endforeach
                 </select>
+
                 @error('unidad_medida')
-                <p class="text-red-600 text-sm mt-1">
-                    {{ $message }}
-                </p>
+                    <p class="text-red-600 text-sm mt-1">
+                        {{ $message }}
+                    </p>
+                @enderror
+            </div>
+
+            <div>
+                <label for="precio"
+                       class="block font-medium text-gray-700 mb-2">
+                    Precio:
+                </label>
+
+                <input
+                    type="number"
+                    id="precio"
+                    name="precio"
+                    min="0.01"
+                    step="0.01"
+                    value="{{ old('precio') }}"
+                    required
+                    class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+
+                @error('precio')
+                    <p class="text-red-600 text-sm mt-1">
+                        {{ $message }}
+                    </p>
                 @enderror
             </div>
 
@@ -117,12 +141,12 @@
                     value="{{ old('stock', 0) }}"
                     required
                     class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    
-                    @error('stock')
-                <p class="text-red-600 text-sm mt-1">
-                    {{ $message }}
-                </p>
-    @enderror
+
+                @error('stock')
+                    <p class="text-red-600 text-sm mt-1">
+                        {{ $message }}
+                    </p>
+                @enderror
             </div>
 
             <div>
@@ -140,12 +164,12 @@
                     value="{{ old('stock_minimo', 0) }}"
                     required
                     class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    
-                    @error('stock_minimo')
-                <p class="text-red-600 text-sm mt-1">
-                    {{ $message }}
-                </p>
-    @enderror
+
+                @error('stock_minimo')
+                    <p class="text-red-600 text-sm mt-1">
+                        {{ $message }}
+                    </p>
+                @enderror
             </div>
 
             <div class="md:col-span-2">
@@ -165,11 +189,13 @@
 
         <div class="overflow-x-auto">
             <table class="w-full border border-gray-300">
+
                 <thead class="bg-gray-200">
                     <tr>
                         <th class="p-3 text-center">ID</th>
                         <th class="p-3 text-center">Nombre</th>
                         <th class="p-3 text-center">Unidad</th>
+                        <th class="p-3 text-center">Precio</th>
                         <th class="p-3 text-center">Stock</th>
                         <th class="p-3 text-center">Stock mínimo</th>
                         <th class="p-3 text-center">Acciones</th>
@@ -179,6 +205,7 @@
                 <tbody>
                     @forelse($ingredientes as $ingrediente)
                         <tr class="border-t hover:bg-gray-50">
+
                             <td class="p-3 text-center">
                                 {{ $ingrediente->id }}
                             </td>
@@ -189,6 +216,10 @@
 
                             <td class="p-3 text-center">
                                 {{ ucfirst($ingrediente->unidad_medida) }}
+                            </td>
+
+                            <td class="p-3 text-center">
+                                ${{ number_format($ingrediente->precio, 2) }}
                             </td>
 
                             <td class="p-3 text-center">
@@ -224,16 +255,18 @@
 
                                 </div>
                             </td>
+
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6"
+                            <td colspan="7"
                                 class="p-6 text-center text-gray-500">
                                 No hay ingredientes registrados.
                             </td>
                         </tr>
                     @endforelse
                 </tbody>
+
             </table>
         </div>
 

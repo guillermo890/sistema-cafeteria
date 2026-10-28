@@ -8,19 +8,23 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Ingrediente extends Model
 {
+    protected $fillable = [
+        'nombre',
+        'precio'
+    ];
+
     public function productos(): BelongsToMany
-{
-    return $this->belongsToMany(
-        Producto::class,
-        'producto_ingrediente',
-        'ingrediente_id',
-        'producto_id'
-    )->withPivot('cantidad')->withTimestamps();
-}
+    {
+        return $this->belongsToMany(
+            Producto::class,
+            'producto_ingrediente',
+            'ingrediente_id',
+            'producto_id'
+        )->withPivot('cantidad')->withTimestamps();
+    }
 
-public function detallesCompra(): HasMany
-{
-    return $this->hasMany(DetalleCompra::class, 'ingrediente_id');
-}
-
+    public function detallesCompra(): HasMany
+    {
+        return $this->hasMany(DetalleCompra::class, 'ingrediente_id');
+    }
 }
