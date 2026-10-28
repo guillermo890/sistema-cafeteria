@@ -15,7 +15,7 @@
             Editar categoría
         </h1>
 
-        {{-- Errores de validación --}}
+        
         @if($errors->any())
             <div class="bg-red-100 text-red-700 p-4 rounded mb-6">
                 <ul class="list-disc list-inside">
@@ -27,27 +27,33 @@
         @endif
 
         <form action="{{ route('categorias.update', $categoria->id) }}"
-              method="POST"
-              class="space-y-5">
+            method="POST"
+            novalidate
+            class="space-y-5">
 
             @csrf
             @method('PUT')
 
             <div>
-                <label for="nombre"
-                       class="block font-medium text-gray-700 mb-2">
-                    Nombre:
-                </label>
+        <label for="nombre"
+            class="block font-medium text-gray-700 mb-2">
+            Nombre:
+        </label>
 
-                <input
-                    type="text"
-                    id="nombre"
-                    name="nombre"
-                    value="{{ old('nombre', $categoria->nombre) }}"
-                    required
-                    maxlength="100"
-                    class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
+        <input
+            type="text"
+            id="nombre"
+            name="nombre"
+            value="{{ old('nombre', $categoria->nombre) }}"
+            class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500
+        @error('nombre') border-red-500 @else border-gray-300 @enderror"
+        >
+
+        @error('nombre')
+            <p class="text-red-600 text-sm mt-1">
+                {{ $message }}
+            </p>
+         @enderror
             </div>
 
             <div>

@@ -18,7 +18,7 @@
             Gestión de categorías
         </h1>
 
-        {{-- Mensajes de éxito y error --}}
+        
         @if(session('success'))
             <div class="bg-green-100 text-green-700 p-3 rounded mb-4">
                 {{ session('success') }}
@@ -41,30 +41,36 @@
             </div>
         @endif
 
-        {{-- Formulario para registrar --}}
+        
         <h2 class="text-xl font-semibold mb-4">
             Registrar categoría
         </h2>
 
         <form action="{{ route('categorias.store') }}"
-              method="POST"
-              class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+        method="POST"
+        novalidate
+        class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
 
             @csrf
 
-            <div>
-                <label for="nombre"
-                       class="block font-medium mb-2">
-                    Nombre:
+        <div>
+            <label for="nombre" class="block font-medium mb-2">
+            Nombre:
                 </label>
 
-                <input type="text"
-                       id="nombre"
-                       name="nombre"
-                       value="{{ old('nombre') }}"
-                       required
-                       class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-            </div>
+             <input type="text"
+                id="nombre"
+                name="nombre"
+                value="{{ old('nombre') }}"
+                class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500
+                @error('nombre') border-red-500 @else border-gray-300 @enderror">
+
+            @error('nombre')
+            <p class="text-red-600 text-sm mt-1">
+            {{ $message }}
+            </p>
+        @enderror
+        </div>
 
             <div>
                 <label for="descripcion"

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Producto;
 use App\Models\Categoria;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class ProductoController extends Controller
 {
@@ -22,18 +23,32 @@ class ProductoController extends Controller
     public function store(Request $request)
     {
         $datos = $request->validate([
-            'categoria_id' => 'required|exists:categorias,id',
-            'nombre' => ['required', 'string', 'max:100',
-                'regex:/^[\p{L}\s]+$/u'],
-            'descripcion' => 'nullable|string',
-            'precio' => 'required|numeric|min:0.01',
-            'stock' => 'required|integer|min:0',
-        ], [
-            'nombre.regex' => 'El nombre solo puede contener letras y espacios.',
-            'categoria_id.required' => 'Debes seleccionar una categoría.',
-            'precio.min' => 'El precio debe ser mayor que cero.',
-            'stock.min' => 'El stock no puede ser negativo.',
-        ]);
+        'categoria_id' => ['required', 'exists:categorias,id'],
+        'nombre' => [
+            'required',
+            'string',
+            'max:100',
+            'regex:/^[\p{L}\s]+$/u',
+            Rule::unique('productos', 'nombre'),
+        ],
+        'descripcion' => ['nullable', 'string'],
+        'precio' => ['required', 'numeric', 'min:0.01'],
+        'stock' => ['required', 'integer', 'min:0'],
+    ], [
+        'categoria_id.required' => 'Debes seleccionar una categoría.',
+        'categoria_id.exists' => 'La categoría seleccionada no existe.',
+        'nombre.required' => 'El nombre del producto es obligatorio.',
+        'nombre.string' => 'El nombre del producto debe ser texto.',
+        'nombre.max' => 'El nombre del producto no puede superar los 100 caracteres.',
+        'nombre.regex' => 'El nombre solo puede contener letras y espacios.',
+        'nombre.unique' => 'Ya existe un producto con ese nombre.',
+        'precio.required' => 'El precio es obligatorio.',
+        'precio.numeric' => 'El precio debe ser un número válido.',
+        'precio.min' => 'El precio debe ser mayor que cero.',
+        'stock.required' => 'El stock es obligatorio.',
+        'stock.integer' => 'El stock debe ser un número entero.',
+        'stock.min' => 'El stock no puede ser negativo.',
+    ]);
 
         $producto = new Producto();
         $producto->categoria_id = $datos['categoria_id'];
@@ -58,13 +73,32 @@ class ProductoController extends Controller
     public function update(Request $request, Producto $producto)
     {
         $datos = $request->validate([
-            'categoria_id' => 'required|exists:categorias,id',
-            'nombre' => ['required', 'string', 'max:100',
-                'regex:/^[\p{L}\s]+$/u'],
-            'descripcion' => 'nullable|string',
-            'precio' => 'required|numeric|min:0.01',
-            'stock' => 'required|integer|min:0',
-        ]);
+        'categoria_id' => ['required', 'exists:categorias,id'],
+        'nombre' => [
+            'required',
+            'string',
+            'max:100',
+            'regex:/^[\p{L}\s]+$/u',
+            Rule::unique('productos', 'nombre')->ignore($producto->id),
+        ],
+        'descripcion' => ['nullable', 'string'],
+        'precio' => ['required', 'numeric', 'min:0.01'],
+        'stock' => ['required', 'integer', 'min:0'],
+    ], [
+        'categoria_id.required' => 'Debes seleccionar una categoría.',
+        'categoria_id.exists' => 'La categoría seleccionada no existe.',
+        'nombre.required' => 'El nombre del producto es obligatorio.',
+        'nombre.string' => 'El nombre del producto debe ser texto.',
+        'nombre.max' => 'El nombre del producto no puede superar los 100 caracteres.',
+        'nombre.regex' => 'El nombre solo puede contener letras y espacios.',
+        'nombre.unique' => 'Ya existe un producto con ese nombre.',
+        'precio.required' => 'El precio es obligatorio.',
+        'precio.numeric' => 'El precio debe ser un número válido.',
+        'precio.min' => 'El precio debe ser mayor que cero.',
+        'stock.required' => 'El stock es obligatorio.',
+        'stock.integer' => 'El stock debe ser un número entero.',
+        'stock.min' => 'El stock no puede ser negativo.',
+    ]);
 
         $producto->categoria_id = $datos['categoria_id'];
         $producto->nombre = $datos['nombre'];

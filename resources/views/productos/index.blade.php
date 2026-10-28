@@ -47,10 +47,11 @@
         </h2>
 
         <form action="{{ route('productos.store') }}"
-              method="POST"
-              class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+            method="POST"
+            novalidate
+            class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
 
-            @csrf
+        @csrf
 
             <div>
                 <label for="categoria_id"
@@ -73,23 +74,33 @@
                         </option>
                     @endforeach
                 </select>
+                @error('categoria_id')
+        <p class="text-red-600 text-sm mt-1">
+            {{ $message }}
+        </p>
+    @enderror
             </div>
 
-            <div>
-                <label for="nombre"
-                       class="block font-medium text-gray-700 mb-2">
-                    Nombre:
-                </label>
+    <div>
+        <label for="nombre"
+           class="block font-medium text-gray-700 mb-2">
+        Nombre:
+        </label>
 
-                <input
-                    type="text"
-                    id="nombre"
-                    name="nombre"
-                    value="{{ old('nombre') }}"
-                    maxlength="100"
-                    required
-                    class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-            </div>
+        <input
+            type="text"
+            id="nombre"
+            name="nombre"
+            value="{{ old('nombre') }}"
+            class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500
+        @error('nombre') border-red-500 @else border-gray-300 @enderror">
+
+        @error('nombre')
+            <p class="text-red-600 text-sm mt-1">
+                {{ $message }}
+            </p>
+        @enderror
+    </div>
 
             <div class="md:col-span-2">
                 <label for="descripcion"
@@ -101,7 +112,13 @@
                     id="descripcion"
                     name="descripcion"
                     rows="3"
-                    class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">{{ old('descripcion') }}</textarea>
+                    class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">{{ old('descripcion') }}
+                </textarea>
+            @error('descripcion')
+                <p class="text-red-600 text-sm mt-1">
+                    {{ $message }}
+                </p>
+                @enderror
             </div>
 
             <div>
@@ -119,6 +136,11 @@
                     value="{{ old('precio') }}"
                     required
                     class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    @error('precio')
+                    <p class="text-red-600 text-sm mt-1">
+                        {{ $message }}
+                    </p>
+                @enderror
             </div>
 
             <div>
@@ -136,6 +158,13 @@
                     value="{{ old('stock', 0) }}"
                     required
                     class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+
+                    @error('stock')
+                <p class="text-red-600 text-sm mt-1">
+                    {{ $message }}
+                </p>
+            @enderror
+                    
             </div>
 
             <div class="md:col-span-2">

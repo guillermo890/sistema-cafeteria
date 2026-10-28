@@ -47,8 +47,9 @@
         </h2>
 
         <form action="{{ route('ingredientes.store') }}"
-              method="POST"
-              class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+            method="POST"
+            novalidate
+            class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
 
             @csrf
 
@@ -65,6 +66,12 @@
                     value="{{ old('nombre') }}"
                     required
                     class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    
+                    @error('nombre')
+            <p class="text-red-600 text-sm mt-1">
+                {{ $message }}
+            </p>
+    @enderror
             </div>
 
             <div>
@@ -88,6 +95,11 @@
                         </option>
                     @endforeach
                 </select>
+                @error('unidad_medida')
+                <p class="text-red-600 text-sm mt-1">
+                    {{ $message }}
+                </p>
+                @enderror
             </div>
 
             <div>
@@ -105,6 +117,12 @@
                     value="{{ old('stock', 0) }}"
                     required
                     class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    
+                    @error('stock')
+                <p class="text-red-600 text-sm mt-1">
+                    {{ $message }}
+                </p>
+    @enderror
             </div>
 
             <div>
@@ -122,6 +140,12 @@
                     value="{{ old('stock_minimo', 0) }}"
                     required
                     class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    
+                    @error('stock_minimo')
+                <p class="text-red-600 text-sm mt-1">
+                    {{ $message }}
+                </p>
+    @enderror
             </div>
 
             <div class="md:col-span-2">
