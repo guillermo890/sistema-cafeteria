@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Categoria;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class CategoriaController extends Controller
 {
@@ -17,9 +18,18 @@ class CategoriaController extends Controller
     public function store(Request $request)
     {
         $datos = $request->validate([
-            'nombre' => ['required', 'string', 'max:100', 'regex:/^[\p{L}\s]+$/u'],
-            'descripcion' => 'nullable|string',
-        ]);
+            'nombre' => ['required', 'string', 'max:100', 'regex:/^[\p{L}\s]+$/u',
+             Rule::unique('categorias', 'nombre')
+             ],
+            'descripcion' => 'nullable|string'
+            ], [
+            'nombre.required' => 'El nombre de la categoría es obligatorio.',
+            'nombre.string' => 'El nombre de la categoría debe ser texto.',
+            'nombre.max' => 'El nombre de la categoría no puede superar los 100 caracteres.',
+            'nombre.regex' => 'El nombre de la categoría solo puede contener letras y espacios.',
+            'nombre.unique' => 'Ya existe una categoría con ese nombre.',
+            'descripcion.string' => 'La descripción debe ser texto.',
+            ]);
 
         $categoria = new Categoria();
         $categoria->nombre = $datos['nombre'];
@@ -39,11 +49,18 @@ class CategoriaController extends Controller
     public function update(Request $request, Categoria $categoria)
     {
     $datos = $request->validate([
-        'nombre' => ['required', 'string', 'max:100', 'regex:/^[\p{L}\s]+$/u'],
-        'descripcion' => 'nullable|string',
+    'nombre' => [
+        'required',
+        'string',
+        'max:100',
+        'regex:/^[\p{L}\s]+$/u',
+        Rule::unique('categorias', 'nombre')->ignore($categoria->id),
+    ],
+    'descripcion' => 'nullable|string',
     ], [
-        'nombre.regex' => 'El nombre de la categoría solo puede contener letras y espacios.',
-        'nombre.required' => 'El nombre de la categoría es obligatorio.',
+    'nombre.required' => 'El nombre de la categoría es obligatorio.',
+    'nombre.regex' => 'El nombre de la categoría solo puede contener letras y espacios.',
+    'nombre.unique' => 'Ya existe una categoría con ese nombre.',
     ]);
 
     $categoria->nombre = $datos['nombre'];
